@@ -61,7 +61,7 @@ Refer to [USAGE.md](/USAGE.md) for usage instructions.
 The following is an example of output from a backup:
 
 ```bash
-$ python3 f5xc-backup-restore.py -a backup -p /var/backup -n mcn-sample
+$ python3 f5xc-backup-restore.py -a backup -p /var/backup -l /var/log/f5xc_logfiles -n mcn-sample
 
 ======================================================================================================================
 [STARTED]     Date: 2024-02-21 07:05:26 UTC     Tenant: f5xc-testdrive     TASK: BACKUP       Namespace: mcn-sample
@@ -79,7 +79,7 @@ $ python3 f5xc-backup-restore.py -a backup -p /var/backup -n mcn-sample
 The following is an example of output from a restore:
 
 ```bash
-$ python3 f5xc-backup-restore.py -a restore -p /var/backup/f5xc-backup-20240221_070526/ -n mcn-sample
+$ python3 f5xc-backup-restore.py -a restore -p /var/backup/f5xc-backup-20240221_070526/ -l /var/log/f5xc_logfiles -n mcn-sample
 
 ==================================================================================================================================
 [STARTED]     Date: 2024-02-21 07:09:50 UTC      Tenant: f5xc-testdrive    TASK: RESTORE      Namespace: mcn-sample
