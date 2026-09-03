@@ -98,8 +98,6 @@ def in_place_remove_string(file_path):
 def backup_http_lb (log_path,backup_path,ns,wait_time):
         api_http_lb = tenant_url + '/api/config/namespaces/' + ns + '/http_loadbalancers'
         req_http_lb = requests.get(api_http_lb, headers=headers, verify=False)
-        print(api_http_lb)
-        print(req_http_lb)
         #print("req_http_lb:")
         #print(req_http_lb)
         data_http_lb = req_http_lb.json()
