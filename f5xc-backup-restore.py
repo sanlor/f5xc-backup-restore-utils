@@ -47,9 +47,11 @@ def get_and_save_conf_object(log_path, backup_path, ns, base_api, items_conf_obj
        api_req = base_api +'/' + item
        if item_ns == ns and not (item.startswith('nfv-mgt-ves-io-') or item.startswith('apm-nfv-mgt-op-ves-io-') or item.startswith('ves-io-')):
            payload = ""
-           backup_start_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           #backup_start_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           backup_start_utc_now = datetime.utcnow()
            response = requests.request("GET", api_req, headers=headers, verify=False)
-           backup_end_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           #backup_end_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           backup_end_utc_now = datetime.utcnow()
            if response.status_code == 200:
                 # item_file = './' + ns + '/' + ns + '_' + file_format + '-' + item + '.json'
                 # item_file = final_backup_path + ns + '/' + ns + '_' + file_format + '-' + item + '.json'
@@ -76,7 +78,7 @@ def in_place_remove_string(file_path):
     # Search for pattern of "tenant" : "<tenant-id>-xxxx", to remove tenantid dependency for backup configuration object
     prefix = '\"tenant\": \"' + tenant_name
     suffix_char = '\",'
-    pattern = re.compile(f'^\s*{re.escape(prefix)}.*{re.escape(suffix_char)}$')
+    pattern = re.compile(f'^\\s*{re.escape(prefix)}.*{re.escape(suffix_char)}$')
     filtered_lines = [line for line in lines if not pattern.match(line)]
 
     # Write the modified content back to the file
@@ -96,6 +98,10 @@ def in_place_remove_string(file_path):
 def backup_http_lb (log_path,backup_path,ns,wait_time):
         api_http_lb = tenant_url + '/api/config/namespaces/' + ns + '/http_loadbalancers'
         req_http_lb = requests.get(api_http_lb, headers=headers, verify=False)
+        print(api_http_lb)
+        print(req_http_lb)
+        #print("req_http_lb:")
+        #print(req_http_lb)
         data_http_lb = req_http_lb.json()
         items_http_lb = data_http_lb['items']
         get_and_save_conf_object(log_path,backup_path, ns, api_http_lb, items_http_lb, 'http_lb', 'HTTP Loadbalancer', wait_time)
@@ -312,9 +318,11 @@ def post_and_write_conf_object(log_path, restore_path, ns, api_url, filename_pre
                 with open(os.path.join(final_restore_path, file_name), 'r') as file:
                     post_data = file.read()
                     item_file = final_restore_path + '/' + file_name
-                    restore_start_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+                    #restore_start_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+                    restore_start_utc_now = datetime.utcnow()
                     response = requests.request("POST", api_url, headers=headers, data=post_data, verify=False)
-                    restore_end_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+                    #restore_end_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+                    restore_end_utc_now = datetime.utcnow()
                     if response.status_code == 200:
                         log_message = restore_start_utc_now.strftime('%Y-%m-%d UTC') + ',RESTORE,' + ns + ',' + object_type + ',' + restore_start_utc_now.strftime('%Y-%m-%d %H:%M:%S UTC') + ',' + restore_end_utc_now.strftime('%Y-%m-%d %H:%M:%S UTC') + ',' + "{:.2f}".format( (os.stat(item_file).st_size) / 1024 ) + ' KB,SUCCESS\n'
                         with open(log_file,'a',encoding='utf-8') as lf:
@@ -455,9 +463,11 @@ def delete_conf_object(log_path, ns, base_api, items_conf_object, object_type, s
        api_req = base_api +'/' + item
        if item_ns == ns and not (item.startswith('nfv-mgt-ves-io-') or item.startswith('apm-nfv-mgt-op-ves-io-') or item.startswith('ves-io-')):
            payload = ""
-           delete_start_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           #delete_start_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           delete_start_utc_now = datetime.utcnow()
            response = requests.request("DELETE", api_req, headers=headers, verify=False)
-           delete_end_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           #delete_end_utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+           delete_end_utc_now = datetime.utcnow()
            if response.status_code == 200:
                 log_message = delete_start_utc_now.strftime('%Y-%m-%d UTC') + ',DELETE,' + ns + ',' + item + ',' + object_type + ',' + delete_start_utc_now.strftime('%Y-%m-%d %H:%M:%S UTC') + ',' + delete_end_utc_now.strftime('%Y-%m-%d %H:%M:%S UTC') + ',SUCCESS\n'
                 with open(log_file,'a',encoding='utf-8') as lf:
@@ -694,17 +704,27 @@ def list_and_delete_svc_discovery (log_path,ns,wait_time):
 tenant_name = 'XXXXXXXXXXXXXXXXX' # Update with your tenant name - e.g. f5-apac-sp
 tenant_url = 'https://' + tenant_name + '.console.ves.volterra.io'
 api_token = 'xxxxxxxxxxxxxxxxx' # Update with your API token. Refer to documentation to generate API Token.
-version = '1.6' # Updated to version 1.5, changed from using environment variables to reading from a config file
+version = '1.7'
+# Updated to version 1.5, changed from using environment variables to reading from a config file
+# Updated to version 1.7, made it compatible with Windows
+
+# Config stuff
+home_dir = os.path.expanduser("~")
+folder_name = ".f5xc"
+file_name = "config.ini"
+configFile  = os.path.join( home_dir, folder_name, file_name)
 
 try:
     # api_token = os.environ.get("XC_API_TOKEN")
     # tenant_name = os.environ.get("XC_TENANT")
     config = configparser.ConfigParser()
-    home_dir = os.path.expanduser("~")
-    configFile  = home_dir + "/.f5xc/config.ini"
+    
     config.read(configFile)
     tenant_name = config['DEFAULT']['tenant']
     api_token = config['DEFAULT']['token']
+    
+    #print("tenant_name: " + tenant_name)
+    #print("api_token: " + api_token)
 
     tenant_url = 'https://' + tenant_name + '.console.ves.volterra.io'
     headers = {
@@ -736,18 +756,18 @@ try:
     if not os.path.isdir(input_path) and os.path.isdir(log_path):
         raise Exception("Path is not a directory")
     else:
-        # utc_now = datetime.utcnow()
-        utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+        utc_now = datetime.utcnow()
+        #utc_now = datetime.now(tz=ZoneInfo("UTC"))
         formatted_utc_now = utc_now.strftime('%Y%m%d_%H%M%S')
-        backup_path = input_path + '/f5xc-backup-' + formatted_utc_now
+        backup_path = os.path.join( input_path, 'f5xc-backup-' + formatted_utc_now )
         restore_path = input_path
 
-    # print(backup_path)
-    # print(restore_path)
+    print("backup_path: " + backup_path)
+    print("restore_path: " + restore_path)
     
     if args['action'] == 'backup':
-        # utc_now = datetime.utcnow()
-        utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+        utc_now = datetime.utcnow()
+        #utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
         formatted_utc_now = utc_now.strftime('%Y-%m-%d %H:%M:%S UTC')
         print(f'\033[0;35m\n ======================================================================================================================' )
         print(f'\033[0;35m [STARTED]     Date: {formatted_utc_now}     Tenant: {tenant_name}     TASK: BACKUP       Namespace: {namespace}')
@@ -779,8 +799,8 @@ try:
             #backup_svc_discovery(log_path,backup_path,ns,backup_wait_time)
         
     elif args['action'] == 'restore':
-        # utc_now = datetime.utcnow()
-        utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+        utc_now = datetime.utcnow()
+        #utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
         formatted_utc_now = utc_now.strftime('%Y-%m-%d %H:%M:%S UTC')
         print(f'\033[0;35m \n==================================================================================================================================' )
         print(f'\033[0;35m [STARTED]     Date: {formatted_utc_now}      Tenant: {tenant_name}    TASK: RESTORE      Namespace: {namespace}' )
@@ -812,8 +832,8 @@ try:
             #backup_svc_discovery(log_path,restore_path,ns,restore_wait_time) # site must exist prior
 
     elif args['action'] == 'forcerestore':
-        # utc_now = datetime.utcnow()
-        utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+        utc_now = datetime.utcnow()
+        #utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
         formatted_utc_now = utc_now.strftime('%Y-%m-%d %H:%M:%S UTC')
         print(f'\033[0;35m \n==================================================================================================================================' )
         print(f'\033[0;35m [STARTED]     Date: {formatted_utc_now}      Tenant: {tenant_name}    TASK: FORCED RESTORE      Namespace: {namespace}' )
@@ -860,13 +880,14 @@ try:
             #backup_global_log_receiver(log_path,restore_path,ns,restore_wait_time)
             #backup_report_conf(log_path,restore_path,ns,restore_wait_time) # Need reciever of report group created prior
             #backup_svc_discovery(log_path,restore_path,ns,restore_wait_time) # site must exist prior
-    # utc_now = datetime.utcnow()
-    utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
+    utc_now = datetime.utcnow()
+    #utc_now = datetime.now(tz=ZoneInfo("Etc/UTC"))
     formatted_utc_now = utc_now.strftime('%Y-%m-%d %H:%M:%S UTC')
     print(f'\033[0;35m ================================================================================================================' )
     print(f'\033[0;35m [COMPLETED]   Date: {formatted_utc_now}     Tenant: {tenant_name}')
     print(f'\033[0;35m ================================================================================================================\n' )
 
 except KeyError:
-    print( "Error reading from config.ini, please sure that config.ini exists in $HOME/.f5xc" )
+    #print( "Error reading from config.ini, please sure that config.ini exists in $HOME/.f5xc" )
+    print( "Error reading from config.ini, please sure that config.ini exists in " + configFile )
     sys.exit(1)
