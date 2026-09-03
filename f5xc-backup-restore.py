@@ -17,7 +17,18 @@
 #  v1.1 - Release (15 Nov 2023)
 # 
 import argparse
-import requests
+#import requests
+
+## Try to gracefully handle the missing module.
+import sys
+import subprocess
+try:
+    import requests
+except ModuleNotFoundError:
+    print("Requests module missing. Installing it now...")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "requests"])
+    import requests
+
 # import json
 # import base64
 import warnings
