@@ -13,20 +13,24 @@ Before you begin, ensure that you have:
 ## Installation Steps
 
 > [!NOTE]
-> The steps below are shown are applicable for Red Hat Enterprise Linux or CentOS
+> The steps below are shown are applicable for Red Hat Enterprise Linux, CentOS, and Arch based distros.
 
 1. **Install Python 3.x**
    The script requires Python 3.x to run. You can install Python 3 using the following command:
 
    ```bash
-   sudo yum install python3
+   sudo yum install python3 python3-requests    # CentOS 7
+   sudo dnf install python3 python3-requests    # CentOS 8 / 9
+   sudo pacman -S python python-requests        # Arch
    ```
 
 2. **Install Git**
    Git is used to clone the repository from GitHub. Install Git with the following command:
 
    ```bash
-   sudo yum install git
+   sudo yum install git   # CentOS 7
+   sudo dnf install git   # CentOS 8 / 9
+   sudo pacman -S git     # Arch
    ```
 
 3. **Clone the Repository**
@@ -57,7 +61,7 @@ Before you begin, ensure that you have:
    You can now run the backup or restore script using the following commands:
 
    ```bash
-   ./f5xc-backup-restore.py
+   ./f5xc-backup-restore.py  --action ACTION --path PATH --log LOG --namespace NAMESPACE
    ```
 
 ## Creating a Service Account
