@@ -77,6 +77,8 @@ $ python3 f5xc-backup-restore.py -a backup -p /var/backup -l /var/log/f5xc_logfi
 ```
 
 The following is an example of output from a restore:
+>[!NOTE]
+>Trying to restore objects that already exists may result in a error ```status code 409```. To overide object, try using ```-a forcerestore``` instead.
 
 ```bash
 $ python3 f5xc-backup-restore.py -a restore -p /var/backup/f5xc-backup-20240221_070526/ -l /var/log/f5xc_logfiles -n mcn-sample
