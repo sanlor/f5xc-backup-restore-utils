@@ -23,6 +23,9 @@ Before you begin, ensure that you have:
    sudo dnf install python3 python3-requests    # CentOS 8 / 9
    sudo pacman -S python python-requests        # Arch
    ```
+> [!TIP]
+> For Windows, download the lates python version from the [official Python website](https://www.python.org/downloads/) and install it.
+> After installing it, make sure to install *requests* by running the command ```python.exe -m pip uninstall requests```.
 
 2. **Install Git**
    Git is used to clone the repository from GitHub. Install Git with the following command:
@@ -32,13 +35,17 @@ Before you begin, ensure that you have:
    sudo dnf install git   # CentOS 8 / 9
    sudo pacman -S git     # Arch
    ```
+> [!TIP]
+> For Windows, you can download [GIT-SCM](https://git-scm.com/download/win) and install it.
+> Alternatively, you can also download the project as a ZIP file and extract it.
 
 3. **Clone the Repository**
    Use Git to clone the `f5xc-backup-restore-utils` repository to your local system:
 
    ```bash
-   git clone https://github.com/f5devcentral/f5xc-backup-restore-utils.git
+   git clone https://github.com/sanlor/f5xc-backup-restore-utils.git
    ```
+
 
 4. **Navigate to the Script Directory**
    Change into the directory where the script is located:
