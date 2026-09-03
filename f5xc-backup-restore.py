@@ -771,8 +771,8 @@ try:
         backup_path = os.path.join( input_path, 'f5xc-backup-' + formatted_utc_now )
         restore_path = input_path
 
-    print("backup_path: " + backup_path)
-    print("restore_path: " + restore_path)
+    #print("backup_path: " + backup_path)
+    #print("restore_path: " + restore_path)
     
     if args['action'] == 'backup':
         utc_now = datetime.utcnow()
